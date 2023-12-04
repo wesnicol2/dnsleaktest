@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # encoding=utf-8
 # Any questions: tutumbul@gmail.com
 # https://bash.ws/dnsleak
@@ -9,6 +9,7 @@ import json
 from random import randint
 from platform import system as system_name
 from subprocess import call as system_call
+from lifxlan import LifxLAN, RED
 
 try:
     from urllib.request import urlopen
@@ -25,6 +26,16 @@ def ping(host):
     return retcode == 0
 
 
+def turn_lights_red():
+    # Discover all lights on the network
+    lifx = LifxLAN()
+    lights = lifx.get_lights()
+
+    # Set color to red for all lights
+    for light in lights:
+        light.set_color(RED)
+
+
 leak_id = randint(1000000, 9999999)
 for x in range(0, 10):
     ping('.'.join([str(x), str(leak_id), "bash.ws"]))
@@ -32,6 +43,18 @@ for x in range(0, 10):
 response = urlopen("https://bash.ws/dnsleak/test/"+str(leak_id)+"?json")
 data = response.read().decode("utf-8")
 parsed_data = json.loads(data)
+
+dns_leak_detected = False
+
+for dns_server in parsed_data:
+    if dns_server['type'] == "dns":
+        dns_leak_detected = True
+        break
+
+if dns_leak_detected:
+    print("DNS leak detected! Turning Lifx lights red...")
+    turn_lights_red()
+    # Add any additional actions you want to take when a leak is detected
 
 print("Your IP:")
 for dns_server in parsed_data:
@@ -48,7 +71,7 @@ for dns_server in parsed_data:
 servers = 0
 for dns_server in parsed_data:
     if dns_server['type'] == "dns":
-        servers = servers + 1
+        servers += 1
 
 if servers == 0:
     print("No DNS servers found")
