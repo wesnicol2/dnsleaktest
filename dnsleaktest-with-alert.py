@@ -28,6 +28,7 @@ def turn_lights_red():
 
     # Set color to red for all lights
     for light in lights:
+        light.set_power(True)
         light.set_color(RED)
 
 
@@ -42,7 +43,7 @@ def ping(host):
 
 leak_id = randint(1000000, 9999999)
 for x in range(0, 10):
-    ping('.'.join([str(x), str(leak_id), "bash.ws"]))
+    ping('.'.join([str(x), str( leak_id), "bash.ws"]))
 
 response = urlopen("https://bash.ws/dnsleak/test/"+str(leak_id)+"?json")
 data = response.read().decode("utf-8")
@@ -86,4 +87,5 @@ for dns_server in parsed_data:
         if dns_server['ip']:
             print(dns_server['ip'])
             if "DNS may be leaking" in dns_server['ip']:
+                print("Triggering alert!")
                 trigger_alert()
