@@ -1,0 +1,2 @@
+lifxlan
+bitstring==3.1.9 # Required to avoid token length error

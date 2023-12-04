@@ -9,11 +9,27 @@ import json
 from random import randint
 from platform import system as system_name
 from subprocess import call as system_call
+from lifxlan import LifxLAN, RED
+
 
 try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
+
+# This function will take all actions that are needed if a DNS leak is detected
+def trigger_alert():
+    turn_lights_red()
+
+def turn_lights_red():
+    # Discover all lights on the network
+    lifx = LifxLAN()
+    lights = lifx.get_lights()
+
+    # Set color to red for all lights
+    for light in lights:
+        light.set_power(True)
+        light.set_color(RED)
 
 
 def ping(host):
@@ -27,7 +43,7 @@ def ping(host):
 
 leak_id = randint(1000000, 9999999)
 for x in range(0, 10):
-    ping('.'.join([str(x), str(leak_id), "bash.ws"]))
+    ping('.'.join([str(x), str( leak_id), "bash.ws"]))
 
 response = urlopen("https://bash.ws/dnsleak/test/"+str(leak_id)+"?json")
 data = response.read().decode("utf-8")
@@ -70,3 +86,6 @@ for dns_server in parsed_data:
     if dns_server['type'] == "conclusion":
         if dns_server['ip']:
             print(dns_server['ip'])
+            if "DNS may be leaking" in dns_server['ip']:
+                print("Triggering alert!")
+                trigger_alert()

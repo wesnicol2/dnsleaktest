@@ -1,3 +1,10 @@
+SPECIFIC FOR THIS FORK: 
+- Use run-dns-leak-test.sh to continously run the dnsleaktest.py program. 
+
+The dnsleaktest_with_alert.py has been updated to turn all Lifx lights on the local area network RED if any DNS leak is found.
+
+
+
 # Dns Leak Test
 The test shows DNS leaks and your external IP. If you use the same ASN for DNS and connection - you have no leak, otherwise here might be a problem.
 
