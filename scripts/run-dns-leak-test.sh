@@ -1,9 +1,11 @@
 #!/bin/bash
-log_dir="log"
+working_dir=/home/wes/coding-workspace/dnsleaktest
+log_dir="$working_dir/log"
 mkdir -p $log_dir
 verbose_log="$log_dir/verbose-dns-leak-test.log"  # Verbose log file
 dns_leak_log="$log_dir/dns-leak-test.log"  # DNS leak log file
-source ./.venv/bin/activate
+python_dir=$working_dir/python
+python_path=$working_dir/.venv/bin/python
 
 if [[ "$1" == "-v" ]]; then
     touch $verbose_log
@@ -20,7 +22,7 @@ echo -e "$new_execution_log_line" >> $dns_leak_log
 
 while :
 do
-    output=$(python dnsleaktest.py 2>&1)  # Run the Python script and capture its output
+    output=$($python_path $python_dir/dnsleaktest-with-alert.py 2>&1)  # Run the Python script and capture its output
 
     if [[ "$1" == "-v" ]]; then
         echo -e "\n\n========== $(date +%Y-%m-%d\ %H:%M:%S) ==========" >> "$verbose_log"    
